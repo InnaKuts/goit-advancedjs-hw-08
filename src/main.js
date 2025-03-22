@@ -19,7 +19,7 @@ let lightbox = new SimpleLightbox('.gallery .gallery-link', {
 
 searchForm.addEventListener('submit', handleSearch);
 
-function handleSearch(event) {
+async function handleSearch(event) {
   event.preventDefault();
 
   const form = event.currentTarget;
@@ -37,29 +37,28 @@ function handleSearch(event) {
   clearGallery();
   showLoader();
 
-  fetchImages(searchQuery)
-    .then(data => {
-      if (data.hits.length === 0) {
-        iziToast.error({
-          title: 'Error',
-          message:
-            'Sorry, there are no images matching your search query. Please try again!',
-          position: 'topRight',
-        });
-      } else {
-        renderGallery(data.hits);
-        lightbox.refresh();
-      }
-    })
-    .catch(error => {
+  try {
+    const data = await fetchImages(searchQuery);
+
+    if (data.hits.length === 0) {
       iziToast.error({
         title: 'Error',
-        message: `An error occurred: ${error.message}`,
+        message:
+          'Sorry, there are no images matching your search query. Please try again!',
         position: 'topRight',
       });
-    })
-    .finally(() => {
-      hideLoader();
-      form.reset();
+    } else {
+      renderGallery(data.hits);
+      lightbox.refresh();
+    }
+  } catch (error) {
+    iziToast.error({
+      title: 'Error',
+      message: `An error occurred: ${error.message}`,
+      position: 'topRight',
     });
+  } finally {
+    hideLoader();
+    form.reset();
+  }
 }

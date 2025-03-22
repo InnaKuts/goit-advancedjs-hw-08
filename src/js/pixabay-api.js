@@ -1,7 +1,8 @@
 const API_KEY = '49351847-475dcb2d908ee06e87d68c158';
 const BASE_URL = 'https://pixabay.com/api/';
+import axios from 'axios';
 
-export function fetchImages(searchQuery) {
+export async function fetchImages(searchQuery) {
   const searchParams = new URLSearchParams({
     key: API_KEY,
     q: searchQuery,
@@ -10,10 +11,12 @@ export function fetchImages(searchQuery) {
     safesearch: true,
   });
 
-  return fetch(`${BASE_URL}?${searchParams}`).then(response => {
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-    return response.json();
-  });
+  try {
+    const response = await axios.get(`${BASE_URL}?${searchParams}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      `HTTP error! Status: ${error.response?.status || 'Unknown'}`
+    );
+  }
 }
