@@ -60,5 +60,5 @@ export function renderGallery(images) {
     )
     .join('');
 
-  gallery.innerHTML = markup;
+  gallery.insertAdjacentHTML('beforeend', markup);
 }
